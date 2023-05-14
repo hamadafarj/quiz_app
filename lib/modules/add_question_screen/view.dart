@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:quiz_app/data/models/question.dart';
+import 'package:quiz_app/modules/home_screen/home_controller.dart';
 
-class AddQuestionPage extends StatefulWidget {
+class AddQuestionPage extends GetView<HomeController> {
   const AddQuestionPage({super.key});
 
-  @override
-  State<AddQuestionPage> createState() => _AddQuestionPageState();
-}
-
-class _AddQuestionPageState extends State<AddQuestionPage> {
-  String? selectedLocation;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,83 +19,109 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              CustomTextFiled(
-                  hintText: 'Enter your question ?',
-                  labelText: 'Question',
-                  showIcon: true),
-              const SizedBox(
-                height: 20,
-              ),
-              const CustomRowAnswer(
-                  answerTitle: "A",
-                  hintText: "First Answer",
-                  color: Color(0xFFffba00),
-                  labelText: "First Answer"),
-              const SizedBox(
-                height: 20,
-              ),
-              const CustomRowAnswer(
-                  answerTitle: "B",
-                  hintText: "Second Answer",
-                  color: Color(0xFF00b660),
-                  labelText: "Second Answer"),
-              const SizedBox(
-                height: 20,
-              ),
-              const CustomRowAnswer(
-                  answerTitle: "C",
-                  color: Color(0XFF487e8b),
-                  hintText: "Third Answer",
-                  labelText: "Third Answer"),
-              const SizedBox(
-                height: 20,
-              ),
-              const CustomRowAnswer(
-                  answerTitle: "D",
-                  hintText: "Fourth Answer",
-                  color: Color(0XFFff0047),
-                  labelText: "Fourth Answer"),
-              const SizedBox(
-                height: 20,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  const Text(
-                    "Select the correct Answer",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  DropdownButton<String>(
-                    value: selectedLocation,
-                    items: <String>['A', 'B', 'C', 'D'].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      setState(() {
-                        selectedLocation = newValue!;
-                      });
-                    },
-                  )
-                ],
-              ),
-               const SizedBox(
-                height: 20,
-              ),
-              Container(
-                height: 50,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF009b8e),
-                  borderRadius: BorderRadius.circular(10)
+          child: Form(
+            key: controller.formKey,
+            child: Column(
+              children: [
+                CustomTextFiled(
+                    textController: controller.questionController,
+                    hintText: 'Enter your question ?',
+                    labelText: 'Question',
+                    showIcon: true),
+                const SizedBox(
+                  height: 20,
                 ),
-                child: Center(child: Text("Add Question",style: TextStyle(color: Colors.white),)),
-              )
-            ],
+                ...controller.editController
+                    .map((e) => Column(
+                          children: [
+                            CustomRowAnswer(
+                              answerTitle: e["answerTitle"],
+                              color: e["color"],
+                              controller: e["controller"],
+                              hintText: e["labelText"],
+                              labelText: e["labelText"],
+                            ),
+                            SizedBox(
+                              height: 20.h,
+                            )
+                          ],
+                        ))
+                    .toList(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    const Text(
+                      "Select the correct Answer",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    SizedBox(
+                      width: 40.w,
+                      height: 40.h,
+                      child: DropdownButtonFormField<String>(
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return "Please enter your task title";
+                          }
+                        },
+                        value: controller.selectedLocation,
+                        items: <String>['A', 'B', 'C', 'D'].map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged: (newValue) {
+                          controller.selectedLocation = newValue!;
+                        },
+                      ),
+                    )
+                  ],
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    if (controller.formKey.currentState!.validate()) {
+                      Questions qu = Questions(
+                          question: controller.questionController.text,
+                          choices: [
+                            for (int i = 0;
+                                i < controller.editController.length;
+                                i++)
+                              controller.editController[i]["controller"].text
+                          ],
+                          rightChoice: controller
+                              .editController[controller.editController
+                                      .indexWhere((element) =>
+                                          element["answerTitle"] ==
+                                          controller.selectedLocation)]
+                                  ["controller"]
+                              .text);
+                      controller.addQuestion(qu);
+                      controller.questionController.clear();
+                      controller.firstQuestionController.clear();
+                      controller.secondQuestionController.clear();
+                      controller.thirdQuestionController.clear();
+                      controller.forthQuestionController.clear();
+                    }
+                    Get.back();
+                  },
+                  child: Container(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                        color: const Color(0xFF009b8e),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Center(
+                        child: Text(
+                      "Add Question",
+                      style: TextStyle(color: Colors.white),
+                    )),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -109,15 +133,23 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
 class CustomTextFiled extends StatelessWidget {
   String hintText, labelText;
   bool showIcon;
+  TextEditingController textController;
   CustomTextFiled(
       {super.key,
       required this.hintText,
       required this.labelText,
-      required this.showIcon});
+      required this.showIcon,
+      required this.textController});
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
+      controller: textController,
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return "Please enter your task title";
+        }
+      },
       decoration: InputDecoration(
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
@@ -141,12 +173,14 @@ class CustomTextFiled extends StatelessWidget {
 class CustomRowAnswer extends StatelessWidget {
   final String answerTitle, hintText, labelText;
   final Color color;
+  final TextEditingController controller;
   const CustomRowAnswer(
       {super.key,
       required this.answerTitle,
       required this.hintText,
       required this.labelText,
-      required this.color});
+      required this.color,
+      required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -169,6 +203,7 @@ class CustomRowAnswer extends StatelessWidget {
         ),
         Expanded(
             child: CustomTextFiled(
+          textController: controller,
           hintText: hintText,
           labelText: labelText,
           showIcon: false,

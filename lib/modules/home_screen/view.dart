@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:quiz_app/modules/home_screen/home_controller.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends GetView<HomeController> {
   const HomePage({super.key});
 
   @override
@@ -24,28 +26,33 @@ class HomePage extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
-            Container(
-              height: 50,
-              width: MediaQuery.of(context).size.width*0.8,
-              decoration: BoxDecoration(
-                  color: const Color(0xFF009b8e),
-                  borderRadius: BorderRadius.circular(10)),
-              child:const Center(
-                  child: Text(
-                "Create Quiz",
-                style: TextStyle(color: Colors.white),
-              )),
+            GestureDetector(
+              onTap: () {
+                Get.toNamed("/createQuiz");
+              },
+              child: Container(
+                height: 50,
+                width: MediaQuery.of(context).size.width * 0.8,
+                decoration: BoxDecoration(
+                    color: const Color(0xFF009b8e),
+                    borderRadius: BorderRadius.circular(10)),
+                child: const Center(
+                    child: Text(
+                  "Create Quiz",
+                  style: TextStyle(color: Colors.white),
+                )),
+              ),
             ),
-              const SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Container(
               height: 50,
-              width: MediaQuery.of(context).size.width*0.8,
+              width: MediaQuery.of(context).size.width * 0.8,
               decoration: BoxDecoration(
                   color: const Color(0xFF009b8e),
                   borderRadius: BorderRadius.circular(10)),
-              child:const Center(
+              child: const Center(
                   child: Text(
                 "Start Quiz",
                 style: TextStyle(color: Colors.white),

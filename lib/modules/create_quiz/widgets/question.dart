@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:quiz_app/data/models/question.dart';
+import 'package:quiz_app/modules/home_screen/home_controller.dart';
 
-class Question extends StatelessWidget {
+class Question extends GetView<HomeController> {
   Question({super.key, required this.question});
   Questions question;
   @override
@@ -44,7 +45,7 @@ class Question extends StatelessWidget {
                                 color: Colors.grey.withOpacity(0.5),
                                 spreadRadius: 2,
                                 blurRadius: 5,
-                                offset: Offset(0, 3),
+                                offset: const Offset(0, 3),
                               ),
                             ],
                           ),
@@ -81,6 +82,7 @@ class Question extends StatelessWidget {
                                     ),
                                     TextButton(
                                       onPressed: () {
+                                        controller.deleteQuestion(question);
                                         Get.back();
                                       },
                                       child: const Text(
