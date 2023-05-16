@@ -109,4 +109,10 @@ class HomeController extends GetxController {
     }
     return res;
   }
+
+  bool duplicatedValue(List values) {
+    bool hasDuplicates = values.length != values.toSet().length;
+
+    return hasDuplicates;
+  }
 }

@@ -82,8 +82,9 @@ class AddQuestionPage extends GetView<HomeController> {
                 ),
                 GestureDetector(
                   onTap: () {
+                    Questions qu;
                     if (controller.formKey.currentState!.validate()) {
-                      Questions qu = Questions(
+                      qu = Questions(
                           question: controller.questionController.text,
                           choices: [
                             for (int i = 0;
@@ -98,15 +99,27 @@ class AddQuestionPage extends GetView<HomeController> {
                                           controller.selectedLocation)]
                                   ["controller"]
                               .text);
-                      controller.addQuestion(qu);
-                      controller.questionController.clear();
-                      controller.firstQuestionController.clear();
-                      controller.secondQuestionController.clear();
-                      controller.thirdQuestionController.clear();
-                      controller.forthQuestionController.clear();
-                      controller.selectedLocation = null;
+                      if (controller.duplicatedValue(qu.choices)) {
+                        final snackBar = SnackBar(
+                          content: const Text('Yay! A SnackBar!'),
+                          action: SnackBarAction(
+                            label: 'Undo',
+                            onPressed: () {},
+                          ),
+                        );
+
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      } else {
+                        controller.addQuestion(qu);
+                        controller.questionController.clear();
+                        controller.firstQuestionController.clear();
+                        controller.secondQuestionController.clear();
+                        controller.thirdQuestionController.clear();
+                        controller.forthQuestionController.clear();
+                        controller.selectedLocation = null;
+                        Get.back();
+                      }
                     }
-                    Get.back();
                   },
                   child: Container(
                     height: 50,
