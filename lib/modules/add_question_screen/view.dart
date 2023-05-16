@@ -104,6 +104,7 @@ class AddQuestionPage extends GetView<HomeController> {
                       controller.secondQuestionController.clear();
                       controller.thirdQuestionController.clear();
                       controller.forthQuestionController.clear();
+                      controller.selectedLocation = null;
                     }
                     Get.back();
                   },

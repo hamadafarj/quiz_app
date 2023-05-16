@@ -25,7 +25,7 @@ class HomeController extends GetxController {
 
   final formKey = GlobalKey<FormState>();
   int currentPage = 0;
-  int result = 0;
+
   String? selectedLocation;
   final PageController pageController = PageController();
   TextEditingController questionController = TextEditingController();
@@ -62,7 +62,7 @@ class HomeController extends GetxController {
   ];
 
   List questions = [].obs;
-
+  List answers = [];
   Future addQuestion(Questions qus) async {
     box.add(qus);
     questions = box.values.toList().cast<Questions>();
@@ -79,5 +79,34 @@ class HomeController extends GetxController {
   changeCurrentPage(int index) {
     currentPage = index;
     update();
+  }
+
+  addAnswer(Map answer) {
+    for (int i = 0; i < answers.length; i++) {
+      if (answers[i]["questionNum"] == answer["questionNum"]) {
+        answers.removeAt(i);
+      }
+    }
+    answers.add(answer);
+    update();
+  }
+
+  String chosenValue(int questionNum) {
+    for (int i = 0; i < answers.length; i++) {
+      if (answers[i]["questionNum"] == questionNum) {
+        return answers[i]["answer"];
+      }
+    }
+    return "";
+  }
+
+  int result() {
+    int res = 0;
+    for (int i = 0; i < answers.length; i++) {
+      if (answers[i]["answer"] == answers[i]["question"].rightChoice) {
+        res++;
+      }
+    }
+    return res;
   }
 }

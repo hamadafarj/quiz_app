@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class QuizResultPage extends StatelessWidget {
   final int userScore, totalQuestion;
@@ -34,34 +35,41 @@ class QuizResultPage extends StatelessWidget {
               height: 300,
               width: MediaQuery.of(context).size.width,
             ),
-              const SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Text(
               "Your Score $userScore / $totalQuestion",
               style: const TextStyle(color: Colors.green, fontSize: 20),
             ),
-             const SizedBox(
+            const SizedBox(
               height: 5,
             ),
-             Text(
-                userScore < totalQuestion / 2 ? "Sorry,better luck next time!" :  "Your're a superstar!",
+            Text(
+              userScore < totalQuestion / 2
+                  ? "Sorry,better luck next time!"
+                  : "Your're a superstar!",
               style: const TextStyle(color: Colors.black, fontSize: 20),
             ),
-              const SizedBox(
+            const SizedBox(
               height: 20,
             ),
-             Container(
-              height: 45,
-              width: MediaQuery.of(context).size.width*0.8,
-              decoration: BoxDecoration(
-                  color: const Color(0xFF009b8e),
-                  borderRadius: BorderRadius.circular(10)),
-              child:const Center(
-                  child: Text(
-               "Back to home",
-                style: TextStyle(color: Colors.white),
-              )),
+            GestureDetector(
+              onTap: () {
+                Get.offAndToNamed("/homePage");
+              },
+              child: Container(
+                height: 45,
+                width: MediaQuery.of(context).size.width * 0.8,
+                decoration: BoxDecoration(
+                    color: const Color(0xFF009b8e),
+                    borderRadius: BorderRadius.circular(10)),
+                child: const Center(
+                    child: Text(
+                  "Back to home",
+                  style: TextStyle(color: Colors.white),
+                )),
+              ),
             ),
           ],
         ));
