@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:quiz_app/modules/add_question_screen/view.dart';
+import 'package:quiz_app/modules/quizzes_screen/view.dart';
 
 import 'data/models/question.dart';
 import 'modules/create_quiz/create_quiz.dart';
@@ -48,6 +49,10 @@ class MyApp extends StatelessWidget {
             GetPage(
               name: "/addQuestionPage",
               page: () => const AddQuestionPage(),
+            ),
+            GetPage(
+              name: "/quizzesPage",
+              page: () => const QuizzesPage(),
             ),
           ],
         );

@@ -1,98 +1,77 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:quiz_app/data/models/question.dart';
+import 'package:quiz_app/modules/home_screen/home_controller.dart';
+import 'package:quiz_app/modules/quiz_result_screen/view.dart';
 
-class QuizzesPage extends StatefulWidget {
+class QuizzesPage extends StatelessWidget {
   const QuizzesPage({super.key});
 
   @override
-  State<QuizzesPage> createState() => _QuizzesPageState();
-}
-
-class _QuizzesPageState extends State<QuizzesPage> {
-  final PageController pageController = PageController();
-  final List<Questions> quizQuestions = [
-    Questions(
-      question: 'What is the capital of France?',
-      choices: ['Paris', 'London', 'Berlin', 'Rome'],
-      rightChoice: 'Rome',
-    ),
-    Questions(
-      question: 'Who invented the telephone?',
-      choices: [
-        'Alexander Graham Bell',
-        'Thomas Edison',
-        'Nikola Tesla',
-        'Guglielmo Marconi'
-      ],
-      rightChoice: 'Thomas Edison',
-    ),
-  ];
-
-  int currentPage = 0;
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Quiz App"),
-        backgroundColor: const Color(0xFF009b8e),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: PageView.builder(
-              itemCount: quizQuestions.length,
-              controller: pageController,
-              onPageChanged: (int page) {
-                setState(() {
-                  currentPage = page;
-                });
-              },
-              itemBuilder: (context, index) => Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "Question ${currentPage + 1} of ",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF009b8e),
-                                fontSize: 24
+        appBar: AppBar(
+          title: const Text("Quiz App"),
+          backgroundColor: const Color(0xFF009b8e),
+          centerTitle: true,
+          elevation: 0,
+        ),
+        body: GetBuilder<HomeController>(
+          builder: (controller) {
+            return Column(
+              children: [
+                Expanded(
+                  child: PageView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: controller.questions.length,
+                    controller: controller.pageController,
+                    allowImplicitScrolling: false,
+                    onPageChanged: (int page) {
+                      controller.questions.length == controller.currentPage + 1
+                          ? Get.offAll(() =>
+                              QuizResultPage(userScore: 5, totalQuestion: 10))
+                          : controller.changeCurrentPage(page);
+                    },
+                    itemBuilder: (context, index) => Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        "Question ${controller.currentPage + 1} of ",
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF009b8e),
+                                        fontSize: 24),
+                                  ),
+                                  TextSpan(
+                                    text: "/ ${controller.questions.length}",
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey),
+                                  ),
+                                ],
                               ),
-                            ),
-                            TextSpan(
-                              text: "/ ${quizQuestions.length}",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey),
-                            ),
-                          ],
+                            )),
+                        QuizQuestionPage(
+                          questions: controller.questions[index],
                         ),
-                      )
-                      // Text(
-                      //   "Question ${currentPage + 1} of ",
-                      //   style: TextStyle(fontSize: 16),
-                      // ),
-                      ),
-                  QuizQuestionPage(
-                    questions: quizQuestions[index],
+                      ],
+                    ),
                   ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+                ),
+              ],
+            );
+          },
+        ));
   }
 }
 
-class QuizQuestionPage extends StatelessWidget {
+class QuizQuestionPage extends GetView<HomeController> {
   final Questions questions;
 
   const QuizQuestionPage({Key? key, required this.questions}) : super(key: key);
@@ -128,7 +107,17 @@ class QuizQuestionPage extends StatelessWidget {
         ),
         const SizedBox(height: 5),
         ...questions.choices
-            .map((option) => QuizOption(option: option))
+            .map(
+              (option) => GestureDetector(
+                onTap: () {
+                  print("object");
+                  if (option == questions.rightChoice) controller.result += 1;
+                  controller.pageController.nextPage(
+                      duration: const Duration(seconds: 1), curve: Curves.ease);
+                },
+                child: QuizOption(option: option),
+              ),
+            )
             .toList(),
       ],
     );

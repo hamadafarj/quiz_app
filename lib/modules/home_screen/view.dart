@@ -46,17 +46,22 @@ class HomePage extends GetView<HomeController> {
             const SizedBox(
               height: 20,
             ),
-            Container(
-              height: 50,
-              width: MediaQuery.of(context).size.width * 0.8,
-              decoration: BoxDecoration(
-                  color: const Color(0xFF009b8e),
-                  borderRadius: BorderRadius.circular(10)),
-              child: const Center(
-                  child: Text(
-                "Start Quiz",
-                style: TextStyle(color: Colors.white),
-              )),
+            GestureDetector(
+              onTap: () {
+                Get.toNamed("/quizzesPage");
+              },
+              child: Container(
+                height: 50,
+                width: MediaQuery.of(context).size.width * 0.8,
+                decoration: BoxDecoration(
+                    color: const Color(0xFF009b8e),
+                    borderRadius: BorderRadius.circular(10)),
+                child: const Center(
+                    child: Text(
+                  "Start Quiz",
+                  style: TextStyle(color: Colors.white),
+                )),
+              ),
             )
           ],
         ));

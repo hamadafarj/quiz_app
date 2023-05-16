@@ -24,7 +24,10 @@ class HomeController extends GetxController {
   }
 
   final formKey = GlobalKey<FormState>();
+  int currentPage = 0;
+  int result = 0;
   String? selectedLocation;
+  final PageController pageController = PageController();
   TextEditingController questionController = TextEditingController();
   TextEditingController firstQuestionController = TextEditingController();
   TextEditingController secondQuestionController = TextEditingController();
@@ -70,6 +73,11 @@ class HomeController extends GetxController {
   deleteQuestion(Questions que) {
     que.delete();
     questions = box.values.toList().cast<Questions>();
+    update();
+  }
+
+  changeCurrentPage(int index) {
+    currentPage = index;
     update();
   }
 }
